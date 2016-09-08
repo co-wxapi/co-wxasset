@@ -30,12 +30,35 @@ class AssetsApi extends WxBase {
     return data;
   }
 
+  *count(access_token){
+    var accessToken = access_token;
+    if (!accessToken) accessToken = yield this.provider.getAccessToken();
+    var url = `https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=${accessToken}`;
+    var result = yield this.jsonRequest(url, 'GET');
+    return result;
+  }
+
+  *list(type, offset, count, access_token) {
+    var accessToken = access_token;
+    if (!accessToken) accessToken = yield this.provider.getAccessToken();
+    var params = {
+      type: type,
+      offset: parseInt(offset)?offset:0,
+      count: parseInt(count)?count:20
+    }
+    var url = `https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=${accessToken}`;
+    var result = yield this.jsonRequest(url, 'POST', params);
+    return result;
+  }
+
   *getAccessToken(){
     var token = yield this.jsonRequest(this.apis.getAccessToken, 'GET');
     return token;
   }
 
   *getServerIps(access_token){
+    var accessToken = access_token;
+    if (!accessToken) accessToken = yield this.provider.getAccessToken();
     var url = `https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=${access_token}`
     var result = yield this.jsonRequest(url, 'GET');
     return result;
